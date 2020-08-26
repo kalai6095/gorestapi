@@ -3,12 +3,14 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+
 )
 
 type server struct {
 }
-type home struct {
-}
+
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -16,7 +18,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"Message":"hello world"}`))
 }
 
-func (h *home) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	switch r.Method {
 	case "GET":
@@ -37,12 +39,51 @@ func (h *home) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func get(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    w.Write([]byte(`{"message": "get called"}`))
+}
+
+func post(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusCreated)
+    w.Write([]byte(`{"message": "post called"}`))
+}
+
+func put(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusAccepted)
+    w.Write([]byte(`{"message": "put called"}`))
+}
+
+func delete(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    w.Write([]byte(`{"message": "delete called"}`))
+}
+
+func notFound(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusNotFound)
+    w.Write([]byte(`{"message": "not found"}`))
+}
+
+
 func main() {
-	s := &server{};
-	//http.Handle("/", s)
-	h := &home{};
-	http.Handle("/", s)
-	http.Handle("/home", h)
-	log.Fatal(http.ListenAndServe(":4200", nil))
+	 
+	/*create a new route for api*/
+	r := mux.NewRouter()
+	/*sub route for actual url*/
+	api := r.PathPrefix("/api/v1").Subrouter()
+	
+    api.HandleFunc("", get).Methods(http.MethodGet)
+    api.HandleFunc("", post).Methods(http.MethodPost)
+    api.HandleFunc("", put).Methods(http.MethodPut)
+    api.HandleFunc("", delete).Methods(http.MethodDelete)
+    api.HandleFunc("", notFound)
+	api.HandleFunc("/home", home)
+	/*create a http server with port number*/
+	log.Fatal(http.ListenAndServe(":4200", r))
 
 }

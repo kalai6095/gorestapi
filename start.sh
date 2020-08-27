@@ -1,5 +1,9 @@
 #!/bin/bash
 
+this_pwd = "$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo $this_pwd
+
 #Function to print info logs
 function logInfo() {
    echo `date "+%m/%d/%Y %H:%M:%S"` " $@"

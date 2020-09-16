@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
+	
 )
 /*Create mysql connection*/
 func CreateCon() *sql.DB {
